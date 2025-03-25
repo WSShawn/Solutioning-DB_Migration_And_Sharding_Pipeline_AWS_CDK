@@ -1,0 +1,31 @@
+{
+  "name": "solutioning_db_migration_pipeline_aws_cdk",
+  "version": "0.1.0",
+  "bin": {
+    "solutioning_db_migration_pipeline_aws_cdk": "bin/solutioning_db_migration_pipeline_aws_cdk.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/node": "22.7.9",
+    "aws-cdk": "2.170.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.6.3"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-apigateway": "^1.203.0",
+    "@aws-cdk/aws-dynamodb": "^1.203.0",
+    "@aws-cdk/aws-lambda": "^1.203.0",
+    "@aws-cdk/aws-lambda-python": "^1.203.0",
+    "@aws-cdk/aws-lambda-python-alpha": "^2.185.0-alpha.0",
+    "aws-cdk-lib": "2.170.0",
+    "constructs": "^10.0.0"
+  }
+}
