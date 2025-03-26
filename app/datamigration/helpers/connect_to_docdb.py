@@ -15,14 +15,6 @@ def connect_to_docdb(credentials):
         # Sample operation: List databases
         databases = client.list_database_names()
         print("Available Databases:", databases)
-        
-        db = client['DBMigrationNShardingRaw']
-        collection = db['ECommerceRawData']
-        
-        documents = collection.find({"toBeMigrated": True})
-        for document in documents:
-            print("Document to be migrated:", document)
-        
         return client
 
     except Exception as e:
