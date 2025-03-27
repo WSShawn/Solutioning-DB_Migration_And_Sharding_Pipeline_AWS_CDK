@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+import os
 import ssl
 
 def connect_to_docdb(credentials):   
@@ -6,9 +7,27 @@ def connect_to_docdb(credentials):
     if not credentials:
         print("No credentials provided")
         return None
-        
+
     try:
-        client = MongoClient("mongodb://docdbadmin:Apply2025!@docdbclusterinstance15e47fa-0etykuhor6oj.ck1k80ayiam1.us-east-1.docdb.amazonaws.com:27017/?tls=true&tlsCAFile=%2FUsers%2Fyumeng%2FDesktop%2FPersonalProjects%2Fglobal-bundle.pem&retryWrites=false&readPreference=nearest", ssl=True)
+        # Dynamically construct the path to the .pem file
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        pem_file_path = os.path.join(current_dir, "global-bundle.pem")
+
+        # Verify the .pem file exists
+        if not os.path.exists(pem_file_path):
+            print(f"Certificate file not found: {pem_file_path}")
+            return None
+
+        # Construct the connection string using credentials
+        username = credentials.get("username", "docdbadmin")
+        password = credentials.get("password", "Apply2025!")
+        host = credentials.get("host", "docdbclusterinstance15e47fa-0etykuhor6oj.ck1k80ayiam1.us-east-1.docdb.amazonaws.com")
+        port = credentials.get("port", 27017)
+
+        connection_string = f"mongodb://{username}:{password}@{host}:{port}/?tls=true&retryWrites=false&readPreference=nearest"
+
+        # Connect to DocumentDB
+        client = MongoClient(connection_string, tls=True, tlsCAFile=pem_file_path)
         client.admin.command('ping')
         print("Connected to DocumentDB!")
 
