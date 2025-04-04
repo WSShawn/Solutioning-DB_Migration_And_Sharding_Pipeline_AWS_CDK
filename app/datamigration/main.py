@@ -5,6 +5,8 @@ from pymongo import UpdateOne
 from helpers.connect_to_docdb import connect_to_docdb
 from helpers.get_docdb_credentials import get_docdb_credentials
 from helpers.shard_documents import shard_documents
+from helpers.connect_to_postgresql import connect_to_postgresql
+from helpers.insert_data_to_postgresql import insert_data_to_postgresql
 import sys
 import os
 
@@ -19,7 +21,6 @@ def main():
 			return
 
 		client = connect_to_docdb(credentials)
-
 		if not client:
 			print("Failed to connect to DocumentDB")
 			return
@@ -27,11 +28,23 @@ def main():
 		db = client['DBMigrationNShardingRaw']
 		collection = db['ECommerceRawData']
 		
-		result_documents = shard_documents(collection)
+		sharded_documents = shard_documents(collection)
+		if not sharded_documents:
+			print("No documents to migrate.")
+			return
+		
+		# Step 5: Connect to PostgreSQL
+		postgres_connection = connect_to_postgresql()
+		if not postgres_connection:
+			print("Failed to connect to PostgreSQL")
+			return
+		
+		insert_data_to_postgresql(postgres_connection, sharded_documents)
+
 		update_operations = []
 
 		# If there are any updates to perform, execute them in bulk
-		for idx, doc in enumerate(result_documents):
+		for idx, doc in enumerate(sharded_documents):
 			print(f"Document {idx + 1} for migration:", doc)
 			# Prepare an update operation to set the toBeMigrated flag to False
 			update_operations.append(UpdateOne(
@@ -50,6 +63,9 @@ def main():
 		if 'client' in locals() and client:
 			client.close()
 			print("Connection closed")
+		if 'postgres_connection' in locals() and postgres_connection:
+			postgres_connection.close()
+			print("PostgreSQL connection closed")
 			
 
 if __name__ == "__main__":

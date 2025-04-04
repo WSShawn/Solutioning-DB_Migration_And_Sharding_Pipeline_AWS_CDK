@@ -21,6 +21,7 @@ def shard_documents(collection):
                 'email': document['email'],
                 'phoneNumber': document['phoneNumber']
             })
+    print("Sharded Documents:", shard_documents)
     
     return shard_documents
         
